@@ -8,18 +8,21 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, session, current_app, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from db import get_db, close_db
+from db import get_db, close_db, init_db as db_init_db
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "change-this-secret")
 
-# MySQL config kept for compatibility (not used with SQLite)
-app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
-app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
-app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "")
-app.config["MYSQL_DATABASE"] = os.getenv("MYSQL_DATABASE", "tesla_giveaway")
+# Render-specific configuration
+if os.getenv("RENDER"):
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
+    render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+    if render_host:
+        app.config['SERVER_NAME'] = render_host
+
+# Admin config
 app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "+1 (404) 615-0478")
 
 app.teardown_appcontext(close_db)
@@ -143,7 +146,7 @@ TESTIMONIES = [
 def get_setting(key, default=""):
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT setting_value FROM site_settings WHERE setting_key=?", (key,))  # ? instead of %s
+    cur.execute("SELECT setting_value FROM site_settings WHERE setting_key=?", (key,))
     row = cur.fetchone()
     cur.close()
     return row["setting_value"] if row else default
@@ -248,7 +251,6 @@ def claim():
             flash("Promo code is required.", "error")
             return render_template("claim.html", cars=CAR_MODELS)
 
-        # Save to SQLite database (using ? instead of %s)
         db = get_db()
         cur = db.cursor()
         cur.execute("""
@@ -350,7 +352,7 @@ def admin_login():
         password = request.form.get("password")
         db = get_db()
         cur = db.cursor()
-        cur.execute("SELECT * FROM admins WHERE email=?", (email,))  # ? instead of %s
+        cur.execute("SELECT * FROM admins WHERE email=?", (email,))
         admin = cur.fetchone()
         cur.close()
         if admin and check_password_hash(admin["password_hash"], password):
@@ -403,7 +405,6 @@ def admin_dashboard():
     db = get_db()
     cur = db.cursor()
     
-    # 1. Fetch statistics
     cur.execute("SELECT COUNT(*) AS total FROM claims")
     claims_count = cur.fetchone()["total"]
     
@@ -413,7 +414,6 @@ def admin_dashboard():
     cur.execute("SELECT COUNT(*) AS total FROM payments")
     payments_count = cur.fetchone()["total"]
     
-    # 2. Fetch the 10 most recent claims
     cur.execute("""
         SELECT full_name, email, model_name, phone, country, promo_code, created_at 
         FROM claims 
@@ -430,93 +430,6 @@ def admin_dashboard():
         payments=payments_count,
         recent_claims=recent_claims
     )
-
-def init_db():
-    with sqlite3.connect('database.db') as conn:
-        conn.row_factory = sqlite3.Row  # Enable dict-like access to rows
-        cursor = conn.cursor()
-        
-        # Create claims table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS claims (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                model_name TEXT NOT NULL,
-                full_name TEXT NOT NULL,
-                email TEXT NOT NULL,
-                phone TEXT NOT NULL,
-                country TEXT NOT NULL,
-                city TEXT NOT NULL,
-                zip_postal TEXT NOT NULL,
-                promo_code TEXT,
-                address TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # Create admins table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS admins (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                email TEXT NOT NULL UNIQUE,
-                password_hash TEXT NOT NULL,
-                full_name TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # Create testimonials table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS testimonials (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                country TEXT NOT NULL,
-                time_text TEXT NOT NULL,
-                comment TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # Create payments table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS payments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                claim_id INTEGER,
-                amount TEXT NOT NULL,
-                method TEXT NOT NULL,
-                payment_status TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (claim_id) REFERENCES claims(id)
-            )
-        ''')
-        
-        # Create site_settings table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS site_settings (
-                setting_key TEXT PRIMARY KEY,
-                setting_value TEXT NOT NULL
-            )
-        ''')
-        
-        # Insert default admin if not exists
-        cursor.execute('''
-            INSERT OR IGNORE INTO admins (id, email, password_hash, full_name, created_at)
-            VALUES (1, 'admin@tesla.com', 'scrypt:32768:8:1$qJFadhyH8KgMajwt$05e24e36e6b70f9958156193796da034639b56fceb5c472cbf0823351996f0ab5a38ecbe6e8973db129e0004ccb708608e6be018788c03e54b68ff52843b0923', 'Tesla Admin', '2026-05-21 17:58:30')
-        ''')
-        
-        # Insert default settings
-        default_settings = [
-            ('site_name', 'Tesla Motors'),
-            ('whatsapp_number', '2348012345678'),
-            ('hero_joined_count', '12,907'),
-            ('event_live_count', '12,919'),
-            ('delivery_fee_note', 'Covers shipping, customs & logistics'),
-        ]
-        cursor.executemany('''
-            INSERT OR IGNORE INTO site_settings (setting_key, setting_value)
-            VALUES (?, ?)
-        ''', default_settings)
-        
-        conn.commit()
 
 @app.route("/api/comments")
 def get_comments():
@@ -547,8 +460,20 @@ def ensure_comments_exist():
             json.dump(sample_comments, f)
         print("Created comments file automatically.")
 
+# Initialize on startup
 ensure_comments_exist()
 
+# Initialize database if it doesn't exist
+if not os.getenv("RENDER"):
+    # Only run init_db() locally, not on Render (Render runs init_db() from db.py)
+    if not os.path.exists('database.db'):
+        db_init_db()
+elif os.getenv("RENDER_DISK_MOUNT_POINT"):
+    # On Render with persistent disk
+    db_path = os.path.join(os.getenv("RENDER_DISK_MOUNT_POINT"), "database.db")
+    if not os.path.exists(db_path):
+        db_init_db()
+
 if __name__ == "__main__":
-    init_db()  # Initialize database on startup
+    # Local development
     app.run(debug=True)
