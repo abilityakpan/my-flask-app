@@ -18,7 +18,7 @@ app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "")
 app.config["MYSQL_DATABASE"] = os.getenv("MYSQL_DATABASE", "tesla_giveaway")
-app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "2348012345678")
+app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "+14046150478")
 
 app.teardown_appcontext(close_db)
 
@@ -148,7 +148,7 @@ def get_setting(key, default=""):
 
 def whatsapp_link(message):
     number = get_setting("whatsapp_number", current_app.config["ADMIN_WHATSAPP"])
-    app.config["ADMIN_WHATSAPP"] = "2348012345678"
+    app.config["ADMIN_WHATSAPP"] = "+14046150478"
     return f"https://wa.me/{number}?text={quote(message)}"
 
 def login_required(view):
