@@ -163,7 +163,7 @@ def get_setting(key, default=""):
 
 def whatsapp_link(message):
     number = get_setting("whatsapp_number", current_app.config["ADMIN_WHATSAPP"])
-    app.config["ADMIN_WHATSAPP"] = "2348012345678"
+    app.config["ADMIN_WHATSAPP"] = "+1 (404) 615-0478")"
     return f"https://wa.me/{number}?text={quote(message)}"
 
 def login_required(view):
