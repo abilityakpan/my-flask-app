@@ -28,6 +28,15 @@ app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "+1 (404) 615-0478")
 # IMPORTANT: Register teardown handler after app creation
 app.teardown_appcontext(close_db)
 
+
+def initialize_database():
+    """Initialize database tables if they don't exist."""
+    try:
+        db_init_db()
+        print("✓ Database initialized successfully!")
+    except Exception as e:
+        print(f"✗ Error initializing database: {e}")
+
 CAR_MODELS = [
     {
         "name": "Tesla Model 3",
