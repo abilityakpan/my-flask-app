@@ -1,0 +1,29 @@
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Available Tesla Cars</h2>
+      <p>Choose your preferred Tesla electric car. All models are brand new 2024–2025 editions delivered straight to your door.</p>
+    </div>
+
+    <div class="card-grid four">
+      {% for car in cars %}
+      <article class="car-card">
+        <div class="car-tag">{{ car.badge }}</div>
+
+        <div class="car-img">
+          <img
+            src="{{ url_for('static', filename=car.image) }}"
+            alt="{{ car.name }}"
+            class="car-photo"
+          >
+        </div>
+
+        <h3>{{ car.name }}</h3>
+        <p class="muted">{{ car.type }}</p>
+        <p class="muted">{{ car.range }} · {{ car.hp }}</p>
+        <span class="free-pill">FREE 🎉</span>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

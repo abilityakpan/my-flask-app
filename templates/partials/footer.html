@@ -1,0 +1,23 @@
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <h3>{{ site_name }}</h3>
+      <p>Official global car giveaway event. We are gifting brand new electric vehicles to participants worldwide.</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Navigation</h4>
+      <a href="{{ url_for('giveaway') }}">Giveaway</a>
+      <a href="{{ url_for('info') }}">Info</a>
+      <a href="{{ url_for('instruction') }}">Instruction</a>
+      <a href="{{ url_for('participate') }}">Participate</a>
+      <a href="{{ url_for('transactions') }}">Transactions</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      © 2026 {{ site_name }}. All rights reserved.
+    </div>
+  </div>
+</footer>

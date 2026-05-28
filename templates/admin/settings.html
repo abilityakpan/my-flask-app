@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<section class="admin-shell">
+  <div class="container admin-layout">
+    <aside class="sidebar admin-card">
+      <h3>Admin Panel</h3>
+      <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+      <a class="active" href="{{ url_for('admin_settings') }}">Settings</a>
+      <a href="{{ url_for('admin_testimonials') }}">Testimonials</a>
+      <a href="{{ url_for('admin_payments') }}">Payments</a>
+      <a href="{{ url_for('admin_tutorials') }}">Tutorials</a>
+      <a href="{{ url_for('admin_logout') }}">Logout</a>
+    </aside>
+
+    <div class="admin-main">
+      <form class="admin-card claim-form" method="post">
+        <h2>Site Settings</h2>
+        <label>Site Name</label>
+        <input type="text" name="site_name" value="{{ site_name }}">
+
+        <label>WhatsApp Number</label>
+        <input type="text" name="whatsapp_number" placeholder="2348012345678">
+
+        <label>Live Joined Count</label>
+        <input type="text" name="hero_joined_count" value="{{ hero_joined_count }}">
+
+        <label>Live Event Count</label>
+        <input type="text" name="event_live_count" value="{{ event_live_count }}">
+
+        <label>Delivery Fee Note</label>
+        <input type="text" name="delivery_fee_note" placeholder="Covers shipping, customs & logistics">
+
+        <button class="btn btn-primary full" type="submit">Save Settings</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

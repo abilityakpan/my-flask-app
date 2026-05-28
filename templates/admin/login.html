@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Admin Login{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container narrow">
+    <form class="claim-form admin-card" method="post">
+      <h2>Admin Login</h2>
+      <label>Email</label>
+      <input type="email" name="email" placeholder="admin@email.com" required>
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Password" required>
+      <button class="btn btn-primary full" type="submit">Login</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site_name }}{% endblock %}</title>
+  <meta name="description" content="Tesla giveaway website">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {% include "partials/navbar.html" %}
+  {% include "partials/flash.html" %}
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  {% include "partials/footer.html" %}
+   <div id="liveTransactions" class="live-transactions"></div>
+   
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/live-transactions.js') }}"></script>
+</body>
+</html>

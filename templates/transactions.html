@@ -1,0 +1,75 @@
+<style>
+    /* Dark Theme Reset */
+    body { background: #0a0a0a; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
+
+    /* The Panel: Added margin-top to "drop it down" on the page */
+    .delivery-panel {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 16px;
+        padding: 20px;
+        max-width: 500px;
+        margin: 40px auto 0 auto; /* Added 40px top margin to push it down */
+        box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+
+    /* The Feed: Height set to 600px to make the list feel longer */
+    #delivery-feed {
+        height: 600px; 
+        overflow-y: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Row Styling */
+    .delivery-row {
+        background: #111;
+        padding: 18px 20px;
+        border-radius: 8px;
+        border-left: 3px solid #ff0000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.5s ease-in-out, opacity 0.5s;
+    }
+
+    .sliding { transform: translateY(-85px); opacity: 0; }
+
+    /* Typography */
+    .name-txt { font-size: 16px; font-weight: 600; }
+    .meta-txt { font-size: 13px; color: #999; margin-top: 4px; }
+    .price-txt { color: #ff3333; font-weight: 800; font-size: 16px; }
+</style>
+
+<div class="delivery-panel">
+    <h3 style="margin-top: 0; font-size: 18px; margin-bottom: 20px;">Recent Deliveries <span style="color: #ff0000;">● LIVE</span></h3>
+    <div id="delivery-feed">
+        {% for d in deliveries %}
+        <div class="delivery-row">
+            <div>
+                <div class="name-txt">{{ d.name }} · {{ d.country }}</div>
+                <div class="meta-txt">{{ d.model }} · {{ d.status }}</div>
+            </div>
+            <div class="price-txt">{{ d.price }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    const feed = document.getElementById('delivery-feed');
+    const MAX_ITEMS = 20;
+
+    setInterval(() => {
+        const firstRow = feed.firstElementChild;
+        if (!firstRow) return;
+
+        firstRow.classList.add('sliding');
+        setTimeout(() => {
+            feed.appendChild(firstRow);
+            firstRow.classList.remove('sliding');
+            if (feed.children.length > MAX_ITEMS) feed.removeChild(feed.firstElementChild);
+        }, 500);
+    }, 2500);
+</script>

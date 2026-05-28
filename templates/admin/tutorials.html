@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Tutorials{% endblock %}
+{% block content %}
+<section class="admin-shell">
+  <div class="container admin-layout">
+    <aside class="sidebar admin-card">
+      <h3>Admin Panel</h3>
+      <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('admin_settings') }}">Settings</a>
+      <a href="{{ url_for('admin_testimonials') }}">Testimonials</a>
+      <a href="{{ url_for('admin_payments') }}">Payments</a>
+      <a class="active" href="{{ url_for('admin_tutorials') }}">Tutorials</a>
+      <a href="{{ url_for('admin_logout') }}">Logout</a>
+    </aside>
+
+    <div class="admin-main">
+      <div class="admin-card">
+        <h2>Video Tutorials</h2>
+        <p class="muted">Upload or link setup videos for easy installation and configuration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

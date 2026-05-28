@@ -1,0 +1,64 @@
+import json
+import random
+from pathlib import Path
+
+first_names = ["Mike", "Sarah", "Carlos", "David", "Amara", "Liam", "Nadia", "Priya", "James", "Emma", "Aisha", "Noah", "Sophia", "Daniel", "Olivia", "Lucas", "Mia", "Ethan", "Zara", "Hassan"]
+last_names = ["Johnson", "Williams", "Mendez", "Chen", "Osei", "Brown", "Sharma", "Okafor", "Bello", "Taylor", "Moore", "Anderson", "Thomas", "White", "Martin", "Lee", "Garcia", "Walker", "Hall", "Ali"]
+countries = ["USA", "UK", "Mexico", "Canada", "Ghana", "India", "Nigeria", "Kenya", "Brazil", "Germany", "France", "South Africa"]
+models = ["Tesla Model 3 2024", "Tesla Model 3 2025", "Tesla Model Y 2025", "Tesla Model S 2025", "Tesla Model X 2025"]
+likes = ["12.4K", "18.1K", "24K", "26.1K", "29.2K", "32.4K", "48.2K", "9.8K", "15.6K"]
+
+templates = [
+    "Just received my {model}!! I paid the delivery fee and within 9 days the car was at my door. This is REAL! 🚗⚡",
+    "I received my {model} after paying the delivery fee. I cried when I saw the car parked outside! 🙏",
+    "From {country}! I received my {model} after paying the delivery fee. This giveaway is 100% real!",
+    "I was skeptical at first but I paid the delivery fee and received my {model}. So real!",
+    "From {country} 🇬🇭 I paid the delivery fee and received my {model}! God bless Tesla!",
+    "I just completed my delivery payment and waiting for confirmation. This looks amazing!",
+    "Such a smooth process. I got a confirmation message immediately after payment."
+]
+
+def initials(name):
+    parts = name.split()
+    return "".join(p[0] for p in parts[:2]).upper()
+
+def build_comment(i):
+    name = f"{random.choice(first_names)} {random.choice(last_names)}"
+    country = random.choice(countries)
+    model = random.choice(models)
+    text = random.choice(templates).format(model=model, country=country)
+    age_minutes = random.randint(0, 14 * 24 * 60)
+
+    if age_minutes == 0:
+        time_text = "just now"
+    elif age_minutes < 60:
+        time_text = f"{age_minutes} min ago"
+    elif age_minutes < 24 * 60:
+        h = age_minutes // 60
+        time_text = f"{h} hour ago" if h == 1 else f"{h} hours ago"
+    else:
+        d = age_minutes // (24 * 60)
+        time_text = f"{d} day ago" if d == 1 else f"{d} days ago"
+[
+ return{
+        "id": i,
+        "initials": initials(name),
+        "name": name,
+        "country": country,
+        "time": time_text,
+        "text": text,
+        "likes": random.choice(likes),
+        "pinned": i == 1
+    }
+]
+    
+
+comments = [build_comment(i) for i in range(1, 70843)]
+
+out = Path("static/data")
+out.mkdir(parents=True, exist_ok=True)
+
+with open(out / "comments.json", "w", encoding="utf-8") as f:
+    json.dump(comments, f, ensure_ascii=False)
+
+print("Saved", len(comments), "comments to static/data/comments.json")

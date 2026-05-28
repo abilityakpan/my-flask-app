@@ -1,0 +1,839 @@
+{% extends "base.html" %}
+{% block title %}Tesla Giveaway{% endblock %}
+{% block content %}
+
+<section class="hero" id="giveaway">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="pill-row">
+        <span class="badge">Official Event</span>
+        <span class="badge live"><span class="dot"></span> LIVE — {{ live_count }} joined</span>
+      </div>
+
+      <h1>Win a <span>Brand New</span> Tesla Electric Car</h1>
+
+      <p>
+        Tesla, the world's leading electric vehicle manufacturer, is giving away brand new electric cars to participants worldwide. Claim your car today!
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="{{ url_for('participate') }}">🚗 Claim Your Free Car →</a>
+        <a class="btn btn-secondary" href="{{ url_for('participate') }}#models">View All Models</a>
+      </div>
+
+      <div class="trust-row">
+        <span>🔒 SSL Secured</span>
+        <span>✅ Verified</span>
+        <span>🌍 Global</span>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-image">
+        <img
+          src="{{ url_for('static', filename='images/Hero-car.jpg') }}"
+          alt="Tesla Electric Car"
+          class="hero-photo"
+        >
+      </div>
+      <div class="hero-caption">
+        <strong>Tesla Electric Car</strong>
+        <span>100% Free — Just Pay Delivery</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="info">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Available Tesla Cars</h2>
+      <p>Choose your preferred Tesla electric car. All models are brand new 2024–2025 editions delivered straight to your door.</p>
+    </div>
+
+    <div class="card-grid four">
+      {% for car in cars %}
+      <article class="car-card">
+        <div class="car-tag">{{ car.badge }}</div>
+
+        <div class="car-img">
+          <img
+            src="{{ url_for('static', filename=car.image) }}"
+            alt="{{ car.name }}"
+            class="car-photo"
+          >
+        </div>
+
+        <h3>{{ car.name }}</h3>
+        <p class="muted">{{ car.type }}</p>
+        <p class="muted">{{ car.range }} · {{ car.hp }}</p>
+        <span class="free-pill">FREE 🎉</span>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section announcement-section">
+  <div class="container announcement-center">
+    <div class="section-heading">
+      <h2>Official Announcement</h2>
+      <p>Tesla's Global Car Giveaway</p>
+      <p>Watch Tesla's official announcement of their biggest car giveaway for all countries worldwide.</p>
+    </div>
+
+    <div class="announcement-layout">
+      <div class="video-wrap">
+        <div class="video-frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/XTeWKmlNmN8?si=ZKk_s7W8moIoZkyO"
+            title="Tesla Official Announcement"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <div class="video-caption">
+          <strong>Tesla Official</strong>
+          <span>28.4M subscribers · Subscribed</span>
+
+          <div class="video-actions">
+            <button type="button" class="action-btn" id="like-btn">Like</button>
+            <button type="button" class="action-btn" id="unlike-btn">Unlike</button>
+            <span>1.2M Share</span>
+            <span>Download</span>
+          </div>
+        </div>
+
+        <div class="comment-section">
+          <div class="comments-head">
+            <strong>Comments · 70,842</strong>
+          </div>
+
+          <div class="comment-list" id="comment-list">
+            {% for comment in comments[:5] %}
+            <div class="yt-comment{% if comment.pinned %} pinned{% endif %}">
+              <div class="comment-avatar">{{ comment.initials }}</div>
+              <div class="comment-body">
+                <div class="comment-meta">
+                  <strong>{{ comment.name }}</strong>
+                  <span>{{ comment.time }}</span>
+                  {% if comment.pinned %}
+                  <span class="pinned-label">📌 Pinned</span>
+                  {% endif %}
+                </div>
+                <p>{{ comment.text }}</p>
+                <div class="comment-actions">
+                  <span>{{ comment.likes }}</span>
+                  <span>Reply</span>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <button type="button" class="more-comments-btn" id="toggle-comments">
+            View 70,842 more comments
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proof-section">
+  <div class="container">
+    <div class="proof-header">
+      <h2>More <span>Proof</span> from Winners</h2>
+      <p>Watch real testimonials from Tesla car recipients around the world.</p>
+    </div>
+
+    <div class="proof-video-wrap">
+      <div class="proof-video">
+        <iframe
+          src="https://www.youtube.com/embed/XDkzm_LR0Co?rel=0&modestbranding=1&playsinline=1"
+          title="Tesla Winners Testimonials"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+
+    <div class="proof-follow">
+      <div class="follow-left">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Tesla" class="follow-logo">
+        <div>
+          <h3>Tesla Official</h3>
+        </div>
+      </div>
+
+      <a href="https://www.youtube.com/@Tesla" target="_blank" rel="noopener noreferrer" class="follow-btn">
+        Follow Tesla on YouTube
+      </a>
+    </div>
+
+    <div class="proof-comments">
+      <div class="comments-top">
+        <h3>Comments 75,600</h3>
+        <span>Visible to users</span>
+      </div>
+
+      <div class="comment-list">
+        <div class="comment-card">
+          <div class="avatar blue">MJ</div>
+          <div class="comment-body">
+            <div class="comment-meta">
+              <strong>Mike Johnson</strong>
+              <span>USA</span>
+              <span>2 days ago</span>
+            </div>
+            <p>I received my Tesla car! I paid the delivery fee and within a week my brand new Tesla Model 3 arrived at my door.</p>
+            <div class="comment-actions">
+              <button type="button">👍 Like</button>
+              <button type="button">👎 Unlike</button>
+              <span class="likes">756 likes</span>
+            </div>
+          </div>
+        </div>
+
+        {% set proof_comments = [
+          {'avatar':'SA','color':'green','name':'Sarah Williams','country':'UK','time':'1 day ago','text':'Just received my Tesla after paying the delivery fee. The delivery process was smooth and fast.'},
+          {'avatar':'DF','color':'red','name':'Diego Fernandez','country':'Spain','time':'7 hours ago','text':'My Tesla Model 3 arrived safely in Madrid. I still cannot believe it is real.'},
+          {'avatar':'NL','color':'emerald','name':'Nguyen Thi Lan','country':'Vietnam','time':'4 hours ago','text':'Tesla delivery confirmed to Ho Chi Minh City. Everything went exactly as promised.'},
+          {'avatar':'CW','color':'yellow','name':'Chen Wei','country':'China','time':'9 hours ago','text':'Great experience. The Tesla giveaway team responded quickly and my order moved fast.'},
+          {'avatar':'KA','color':'purple','name':'Kofi Asante','country':'Ghana','time':'2 hours ago','text':'This giveaway is blessing people around the world. My Tesla delivery is officially confirmed.'},
+          {'avatar':'RK','color':'pink','name':'Rachel Kim','country':'South Korea','time':'6 hours ago','text':'Best electric car I have ever seen. The process was simple and professional.'},
+          {'avatar':'AB','color':'indigo','name':'Aisha Bello','country':'Nigeria','time':'5 hours ago','text':'I paid the delivery fee and received confirmation immediately. Tesla is amazing.'},
+          {'avatar':'MS','color':'blue','name':'Maria Silva','country':'Brazil','time':'8 hours ago','text':'My Tesla arrived in São Paulo and it looks exactly like the model shown.'},
+          {'avatar':'JT','color':'orange','name':'James Thompson','country':'Canada','time':'3 hours ago','text':'Very fast confirmation and excellent support. My Tesla Model Y is on the way.'},
+          {'avatar':'EA','color':'red','name':'Elena Alvarez','country':'Mexico','time':'1 hour ago','text':'Tesla delivery was straightforward and the updates were clear all the way.'},
+          {'avatar':'PM','color':'cyan','name':'Peter Mwangi','country':'Kenya','time':'10 hours ago','text':'I am so happy right now. My Tesla claim was approved and delivery has started.'},
+          {'avatar':'SO','color':'teal','name':'Sofia Oliveira','country':'Portugal','time':'6 hours ago','text':'Beautiful car and a smooth process. The Tesla team handled my request well.'},
+          {'avatar':'AH','color':'amber','name':'Ahmed Hassan','country':'UAE','time':'12 hours ago','text':'Great service and fast feedback. I have shared this giveaway with my friends.'},
+          {'avatar':'LB','color':'rose','name':'Linda Brown','country':'USA','time':'9 hours ago','text':'The proof section made me believe it, and now my Tesla order is active.'},
+          {'avatar':'YP','color':'slate','name':'Yuki Patel','country':'India','time':'7 hours ago','text':'Support replied fast and my delivery details were accepted without issues.'}
+        ] %}
+
+        {% for c in proof_comments %}
+        <div class="comment-card">
+          <div class="avatar {{ c.color }}">{{ c.avatar }}</div>
+          <div class="comment-body">
+            <div class="comment-meta">
+              <strong>{{ c.name }}</strong>
+              <span>{{ c.country }}</span>
+              <span>{{ c.time }}</span>
+            </div>
+            <p>{{ c.text }}</p>
+            <div class="comment-actions">
+              <button type="button">👍 Like</button>
+              <button type="button">👎 Unlike</button>
+              <span class="likes">756 likes</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ceo-section">
+  <div class="container">
+    <div class="ceo-header">
+      <h2>Straight from the CEO</h2>
+      <p>Official announcements from Tesla's leadership</p>
+    </div>
+
+    <div class="ceo-wrap">
+      <article class="ceo-post">
+        <div class="ceo-user">
+          <img src="{{ url_for('static', filename='images/Elon11.jpg') }}" alt="Elon Musk" class="ceo-avatar">
+          <div class="ceo-user-meta">
+            <div class="ceo-name-row">
+              <h3>Elon Musk</h3>
+              <span class="verified-badge">✓</span>
+            </div>
+            <p>CEO, Tesla, Inc.</p>
+          </div>
+        </div>
+
+        <p class="ceo-text">
+          Tesla is committed to accelerating the world's transition to sustainable energy.
+          As part of our mission, we're launching a worldwide giveaway of our electric vehicles —
+          completely free. Just cover the delivery cost and a brand-new Tesla will be shipped
+          directly to your door. 🚗⚡
+        </p>
+
+        <div class="ceo-actions">
+          <button type="button" class="action-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+            </svg>
+            <span>128K</span>
+          </button>
+
+          <button type="button" class="action-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+              <path d="M17.5 3a2.5 2.5 0 0 1 2.5 2.5v11a2.5 2.5 0 0 1-2.5 2.5H9l-5 4V19H4.5A2.5 2.5 0 0 1 2 16.5v-11A2.5 2.5 0 0 1 4.5 3h13z"></path>
+            </svg>
+            <span>47K</span>
+          </button>
+
+          <button type="button" class="action-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+              <path d="M12 22a3 3 0 0 0 3-3H9a3 3 0 0 0 3 3zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2z"></path>
+            </svg>
+            <span>8.2K</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="ceo-post">
+        <div class="ceo-user">
+          <img src="{{ url_for('static', filename='images/Tesla.jpg') }}" alt="Tesla Official" class="ceo-avatar">
+          <div class="ceo-user-meta">
+            <div class="ceo-name-row">
+              <h3>Tesla Official</h3>
+              <span class="official-badge">Official</span>
+            </div>
+            <p>@Tesla · Official Account</p>
+          </div>
+        </div>
+
+        <p class="ceo-text">
+          📢 OFFICIAL ANNOUNCEMENT: Our global Tesla car giveaway is NOW LIVE! 🌍
+          Open to ALL countries. No purchase necessary — just cover the one-time delivery fee.
+          Model 3, Model Y, Model S, Model X and more available. Don't miss out! 🎁🚗
+        </p>
+
+        <div class="ceo-actions">
+          <button type="button" class="action-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+            </svg>
+            <span>215K</span>
+          </button>
+
+          <button type="button" class="action-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+              <path d="M17.5 3a2.5 2.5 0 0 1 2.5 2.5v11a2.5 2.5 0 0 1-2.5 2.5H9l-5 4V19H4.5A2.5 2.5 0 0 1 2 16.5v-11A2.5 2.5 0 0 1 4.5 3h13z"></path>
+            </svg>
+            <span>89K</span>
+          </button>
+
+          <button type="button" class="action-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+              <path d="M12 22a3 3 0 0 0 3-3H9a3 3 0 0 0 3 3zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2z"></path>
+            </svg>
+            <span>14K</span>
+          </button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="buyers-section">
+  <div class="container">
+    <div class="buyers-header">
+      <h2>What Winners Are Saying</h2>
+      <p>Real testimonials from verified Tesla car recipients</p>
+    </div>
+
+    <div class="buyers-grid">
+      <article class="buyer-card">
+        <div class="buyer-card-inner">
+          <div class="buyer-front">
+            <div class="buyer-top">
+              <img src="{{ url_for('static', filename='images/winner1.jpg') }}" alt="Buyer 1" class="buyer-avatar">
+              <div>
+                <h3>Michael Johnson</h3>
+                <p>Verified Tesla Recipient · USA</p>
+              </div>
+            </div>
+            <p class="buyer-quote">“I never thought I would win a Tesla. The process was smooth, and my delivery fee was the only payment I made.”</p>
+            <span class="hover-tip">Hover to read next testimony</span>
+          </div>
+
+          <div class="buyer-back">
+            <div class="buyer-top">
+              <img src="{{ url_for('static', filename='images/winner3.jpg') }}" alt="Buyer 2" class="buyer-avatar">
+              <div>
+                <h3>Grace Mensah</h3>
+                <p>Verified Tesla Recipient · Ghana</p>
+              </div>
+            </div>
+            <p class="buyer-quote">“My Tesla Model Y arrived faster than I expected. The updates were clear and the support was professional.”</p>
+            <span class="hover-tip">Hover to flip back</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="buyer-card">
+        <div class="buyer-card-inner">
+          <div class="buyer-front">
+            <div class="buyer-top">
+              <img src="{{ url_for('static', filename='images/winner2.jpg') }}" alt="Buyer 3" class="buyer-avatar">
+              <div>
+                <h3>Daniel Kim</h3>
+                <p>Verified Tesla Recipient · South Korea</p>
+              </div>
+            </div>
+            <p class="buyer-quote">“This felt genuine from start to finish. I received confirmation, tracking, and delivery exactly as promised.”</p>
+            <span class="hover-tip">Hover to read next testimony</span>
+          </div>
+
+          <div class="buyer-back">
+            <div class="buyer-top">
+              <img src="{{ url_for('static', filename='images/winner4.jpg') }}" alt="Buyer 4" class="buyer-avatar">
+              <div>
+                <h3>John Doe</h3>
+                <p>Verified Tesla Recipient · UK</p>
+              </div>
+            </div>
+            <p class="buyer-quote">“The whole experience was clear and professional. I got my delivery update and support reply quickly.”</p>
+            <span class="hover-tip">Hover to flip back</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="buyer-card">
+        <div class="buyer-card-inner">
+          <div class="buyer-front">
+            <div class="buyer-top">
+              <img src="{{ url_for('static', filename='images/winner5.jpg') }}" alt="Buyer 5" class="buyer-avatar">
+              <div>
+                <h3>Mark Stanley</h3>
+                <p>Verified Tesla Recipient · USA</p>
+              </div>
+            </div>
+            <p class="buyer-quote">“I saw the testimonials and decided to try. My Tesla confirmation came through fast.”</p>
+            <span class="hover-tip">Hover to read next testimony</span>
+          </div>
+
+          <div class="buyer-back">
+            <div class="buyer-top">
+              <img src="{{ url_for('static', filename='images/winner0.jpg') }}" alt="Buyer 6" class="buyer-avatar">
+              <div>
+                <h3>Elena Garcia</h3>
+                <p>Verified Tesla Recipient · Spain</p>
+              </div>
+            </div>
+            <p class="buyer-quote">“Very smooth process. The Tesla delivery instructions were easy to follow and the response time was excellent.”</p>
+            <span class="hover-tip">Hover to flip back</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="receipt-section">
+  <div class="container">
+    <div class="receipt-header">
+      <h2>Receipts From Tesla Winners</h2>
+      <p>Payment receipts submitted by verified winners</p>
+    </div>
+
+    <div class="receipt-card">
+      <div class="receipt-top">
+        <div>
+          <h3>Tesla Delivery Receipt</h3>
+          <p>Receipt No: TRX-2026-0525-001</p>
+        </div>
+        <div class="receipt-badge">Paid</div>
+      </div>
+
+      <div class="receipt-grid">
+        <div>
+          <span>Customer Name</span>
+          <strong>Michael Johnson</strong>
+        </div>
+        <div>
+          <span>Delivery Method</span>
+          <strong>International Shipment</strong>
+        </div>
+        <div>
+          <span>Payment Date</span>
+          <strong>May 25, 2026</strong>
+        </div>
+        <div>
+          <span>Reference</span>
+          <strong>TESLA-GIVEAWAY-789</strong>
+        </div>
+      </div>
+
+      <div class="receipt-table">
+        <div class="receipt-row receipt-head">
+          <span>Description</span>
+          <span>Amount</span>
+        </div>
+        <div class="receipt-row">
+          <span>Tesla Giveaway Delivery Fee</span>
+          <span>$289.00</span>
+        </div>
+        <div class="receipt-row">
+          <span>Processing Fee</span>
+          <span>$19.00</span>
+        </div>
+        <div class="receipt-row total-row">
+          <span>Total Paid</span>
+          <span>$308.00</span>
+        </div>
+      </div>
+
+      <div class="receipt-footer">
+        <p>Thank you for participating in the Tesla global giveaway.</p>
+        <button type="button" class="receipt-btn">Download Receipt</button>
+      </div>
+    </div>
+
+    <div class="receipt-gallery-wrap">
+      <h3 class="receipt-gallery-title">Winner Payment Receipts</h3>
+      <div class="receipt-gallery">
+        <figure class="receipt-image-card">
+          <img src="{{ url_for('static', filename='images/receipt1.jpg') }}" alt="Winner payment receipt 1">
+          <figcaption>Verified receipt from USA</figcaption>
+        </figure>
+
+        <figure class="receipt-image-card">
+          <img src="{{ url_for('static', filename='images/receipt2.jpg') }}" alt="Winner payment receipt 2">
+          <figcaption>Verified receipt from USA</figcaption>
+        </figure>
+
+        <figure class="receipt-image-card">
+          <img src="{{ url_for('static', filename='images/receipt3.jpg') }}" alt="Winner payment receipt 3">
+          <figcaption>Verified receipt from UK</figcaption>
+        </figure>
+
+        <figure class="receipt-image-card">
+          <img src="{{ url_for('static', filename='images/receipt4.jpg') }}" alt="Winner payment receipt 4">
+          <figcaption>Verified receipt from USA</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section participate-page" id="participate">
+  <div class="container">
+    <div class="section-heading text-center mb-5">
+      <span class="badge live"><span class="dot"></span> Official Tesla Global Giveaway</span>
+      <h1 class="page-title">Choose Your Tesla Electric Car</h1>
+      <p>Tesla is gifting brand new electric vehicles to participants worldwide.</p>
+    </div>
+
+    <div class="countdown-wrap">
+      <div class="countdown">
+        <div><strong>{{ event_ends.hrs }}</strong><span>HRS</span></div>
+        <div><strong>{{ event_ends.min }}</strong><span>MIN</span></div>
+        <div><strong>{{ event_ends.sec }}</strong><span>SEC</span></div>
+      </div>
+      <p class="center-text">{{ participants }} participants</p>
+    </div>
+
+    <div class="cards-grid">
+      {% for car in cars %}
+      <article class="motor-card motor-theme-{{ loop.index }}">
+        <div class="motor-head">
+          <div>
+            <div class="motor-badge">{{ car.badge }}</div>
+            <h3>{{ car.name }}</h3>
+            <p>{{ car.type }}</p>
+          </div>
+        </div>
+
+        <div class="motor-image-wrap">
+          <img src="{{ url_for('static', filename=car.image) }}" alt="{{ car.name }}" class="motor-image">
+        </div>
+
+        <div class="motor-features">
+          <div class="feature-item">
+            <span class="feature-label">Power</span>
+            <strong>{{ car.hp }}</strong>
+          </div>
+          <div class="feature-item">
+            <span class="feature-label">Range</span>
+            <strong>{{ car.range }}</strong>
+          </div>
+          <div class="feature-item">
+            <span class="feature-label">Ships To</span>
+            <strong>All Countries</strong>
+          </div>
+          <div class="feature-item">
+            <span class="feature-label">Delivery</span>
+            <strong>{{ car.delivery }}</strong>
+          </div>
+          <div class="feature-item price-item">
+            <span class="feature-label">Price</span>
+            <strong>{{ car.fee }}</strong>
+          </div>
+        </div>
+
+        <a class="btn btn-primary full motor-btn" href="{{ url_for('claim') }}">
+          Claim this Tesla Now
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+
+    <div class="center-note">
+      <h3>⚡ Tesla Electric — Built for the Future</h3>
+      <p>Each participant is eligible for one vehicle only.</p>
+    </div>
+  </div>
+</section>
+
+<section class="follow-tesla-section">
+  <div class="container">
+    <div class="follow-tesla-header">
+      <h2>Follow Tesla Official</h2>
+      <p>Verified official social media accounts of Tesla worldwide.</p>
+    </div>
+
+    <div class="follow-tesla-grid">
+      <a href="https://www.instagram.com/tesla/" target="_blank" rel="noopener noreferrer" class="social-card instagram">
+        <div class="social-icon">IG</div>
+        <div class="social-info">
+          <h3>Tesla on Instagram</h3>
+          <p>@tesla · Verified</p>
+        </div>
+        <span class="social-arrow">↗</span>
+      </a>
+
+      <a href="https://x.com/Tesla" target="_blank" rel="noopener noreferrer" class="social-card x">
+        <div class="social-icon">X</div>
+        <div class="social-info">
+          <h3>Tesla on X</h3>
+          <p>@Tesla · Verified</p>
+        </div>
+        <span class="social-arrow">↗</span>
+      </a>
+
+      <a href="https://www.facebook.com/TeslaMotors/" target="_blank" rel="noopener noreferrer" class="social-card facebook">
+        <div class="social-icon">f</div>
+        <div class="social-info">
+          <h3>Tesla on Facebook</h3>
+          <p>Official Facebook presence</p>
+        </div>
+        <span class="social-arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="instruction-section" id="instruction">
+  <div class="container">
+    <div class="instruction-hero">
+      <span class="section-badge">
+        <span class="dot"></span> Simple process
+      </span>
+      <h2 class="instruction-title">How to Claim Your Tesla Car</h2>
+      <p class="instruction-subtitle">
+        Follow these simple steps to receive your brand new Tesla electric car giveaway.
+      </p>
+    </div>
+
+    <div class="instruction-grid row g-4">
+      <div class="col-12 col-md-6 col-lg-3">
+        <article class="instruction-card">
+          <div class="instruction-card-top">
+            <span class="instruction-index">01</span>
+            <div class="instruction-icon">📝</div>
+          </div>
+          <h3>Register Your Details</h3>
+          <p>Enter your name, delivery address, and contact information so Tesla can ship your car directly to you.</p>
+        </article>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <article class="instruction-card">
+          <div class="instruction-card-top">
+            <span class="instruction-index">02</span>
+            <div class="instruction-icon">🚗</div>
+          </div>
+          <h3>Choose Your Tesla Car</h3>
+          <p>Select your preferred Tesla model: Model 3, Model Y, Model S, or Model X — all brand new.</p>
+        </article>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <article class="instruction-card">
+          <div class="instruction-card-top">
+            <span class="instruction-index">03</span>
+            <div class="instruction-icon">💳</div>
+          </div>
+          <h3>Pay Delivery Fee</h3>
+          <p>Pay the small one-time delivery fee to cover shipping and logistics. This is the only fee required.</p>
+        </article>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <article class="instruction-card">
+          <div class="instruction-card-top">
+            <span class="instruction-index">04</span>
+            <div class="instruction-icon">🎉</div>
+          </div>
+          <h3>Receive Your Tesla Car</h3>
+          <p>Your brand new Tesla electric car will be delivered to your door within 7–14 business days. Enjoy.</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="instruction-cta">
+      <a class="btn btn-primary instruction-btn" href="{{ url_for('claim') }}">🚗 Start Claiming Your Tesla Now →</a>
+    </div>
+  </div>
+</section>
+
+<section id="transactions" class="section">
+  <div class="container">
+    <div class="delivery-panel">
+      <h3 style="margin-top: 0; font-size: 1.2rem; margin-bottom: 20px;">
+        Recent Deliveries <span style="color: var(--red2);">● LIVE</span>
+      </h3>
+      <div id="delivery-feed">
+        {% for d in deliveries %}
+        <div class="delivery-row">
+          <div>
+            <div class="name-txt">{{ d.name }} · {{ d.country }}</div>
+            <div class="meta-txt">{{ d.model }} · {{ d.status }}</div>
+          </div>
+          <div class="price-txt">{{ d.price }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section testimonials">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Live Testimonials</h2>
+      <p>Real-time comments and proof from participants around the world.</p>
+    </div>
+    <div id="testimonial-grid" class="testimonial-grid"></div>
+  </div>
+</section>
+
+<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const commentBtn = document.getElementById('toggle-comments');
+  const commentList = document.getElementById('comment-list');
+
+  if (commentBtn && commentList) {
+    commentBtn.addEventListener('click', function () {
+      commentList.classList.toggle('expanded');
+      this.textContent = commentList.classList.contains('expanded')
+        ? 'Hide comments'
+        : 'View 70,842 more comments';
+    });
+  }
+
+  const feed = document.getElementById('delivery-feed');
+  if (feed) {
+    const MAX_ITEMS = 20;
+    setInterval(() => {
+      const firstRow = feed.firstElementChild;
+      if (!firstRow) return;
+      firstRow.classList.add('sliding');
+      setTimeout(() => {
+        feed.appendChild(firstRow);
+        firstRow.classList.remove('sliding');
+        if (feed.children.length > MAX_ITEMS) {
+          feed.removeChild(feed.firstElementChild);
+        }
+      }, 500);
+    }, 2500);
+  }
+
+  const testimonialsData = [
+    { name: "Alex R.", country: "Canada", quote: "Just got my notification! Can't wait for the delivery." },
+    { name: "Fatima S.", country: "UAE", quote: "This is absolutely real, just received my tracking number." },
+    { name: "Carlos M.", country: "Mexico", quote: "My Tesla Model 3 arrived yesterday. Incredible!" },
+    { name: "Jasmine W.", country: "Australia", quote: "Processing fee paid, now waiting for shipment." },
+    { name: "Hiroshi T.", country: "Japan", quote: "Efficient and professional. Highly recommend." },
+    { name: "Elena B.", country: "Italy", quote: "Still can't believe I won! The delivery team was so helpful." },
+    { name: "Kofi M.", country: "Ghana", quote: "Got my confirmation email in minutes. Smooth process." },
+    { name: "Sarah L.", country: "UK", quote: "Tesla's support team answered all my questions perfectly." },
+    { name: "David K.", country: "Germany", quote: "Shipping updates are very clear. My car is arriving soon!" },
+    { name: "Maria G.", country: "Brazil", quote: "Best experience ever. Thank you for this amazing gift!" },
+    { name: "Liam O.", country: "Ireland", quote: "The process was so simple. I’m impressed!" },
+    { name: "Wei Z.", country: "China", quote: "Fast delivery, the car is in perfect condition." },
+    { name: "Amara N.", country: "Nigeria", quote: "I was skeptical at first, but it is 100% legit." },
+    { name: "Lucas H.", country: "France", quote: "My dream car has arrived. Thank you Tesla!" },
+    { name: "Priya S.", country: "India", quote: "Clear communication throughout the entire process." },
+    { name: "Erik V.", country: "Norway", quote: "The most exciting thing to happen this year." },
+    { name: "Sofia D.", country: "Spain", quote: "Everything went exactly as promised. Very happy." },
+    { name: "James B.", country: "USA", quote: "Received my tracking details today. So thrilled." },
+    { name: "Yuki I.", country: "South Korea", quote: "Professional service and a beautiful car." },
+    { name: "Omar K.", country: "Egypt", quote: "Can't wait to drive it! Excellent experience." }
+  ];
+
+  function addTestimonial() {
+    const grid = document.getElementById('testimonial-grid');
+    if (!grid) return;
+    const randomEntry = testimonialsData[Math.floor(Math.random() * testimonialsData.length)];
+    const card = document.createElement('div');
+    card.className = 'testimonial-card fade-in';
+    card.innerHTML = `
+      <div class="comment-meta">
+        <strong>${randomEntry.name}</strong>
+        <span class="country">${randomEntry.country}</span>
+      </div>
+      <p>"${randomEntry.quote}"</p>
+    `;
+    grid.prepend(card);
+    if (grid.children.length > 8) {
+      grid.removeChild(grid.lastChild);
+    }
+  }
+
+  function scheduleNext() {
+    addTestimonial();
+    setTimeout(scheduleNext, Math.random() * 2500 + 2500);
+  }
+
+  for (let i = 0; i < 4; i++) addTestimonial();
+  scheduleNext();
+});
+
+let currentPage = 1;
+
+async function loadComments() {
+    const response = await fetch(`/api/comments?page=${currentPage}`);
+    const comments = await response.json();
+    const container = document.getElementById("comment-list");
+
+    comments.forEach(comment => {
+        const div = document.createElement("div");
+        div.className = "yt-comment" + (comment.pinned ? " pinned" : "");
+        div.innerHTML = `
+            <div class="comment-avatar">${comment.initials}</div>
+            <div class="comment-body">
+                <div class="comment-meta">
+                    <strong>${comment.name}</strong> <span>${comment.time}</span>
+                    ${comment.pinned ? '<span class="pinned-label">📌 Pinned</span>' : ''}
+                </div>
+                <p>${comment.text}</p>
+                <div class="comment-actions">
+                    <span>${comment.likes}</span> <span>Reply</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+    currentPage++;
+}
+
+// Load the first page immediately
+loadComments();
+
+// Button to load more
+document.getElementById("toggle-comments").addEventListener("click", loadComments);
+</script>
+
+{% endblock %}

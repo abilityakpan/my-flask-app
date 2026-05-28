@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Participate{% endblock %}
+{% block content %}
+
+<section class="section participate-page">
+  <div class="container">
+
+    <div class="section-heading text-center mb-5">
+      <span class="badge live"><span class="dot"></span> Official Tesla Global Giveaway</span>
+      <h1 class="page-title">Choose Your Tesla Electric Car</h1>
+      <p>Tesla is gifting brand new electric vehicles to participants worldwide.</p>
+    </div>
+
+    <div class="countdown-wrap">
+      <div class="countdown">
+        <div><strong>{{ event_ends.hrs }}</strong><span>HRS</span></div>
+        <div><strong>{{ event_ends.min }}</strong><span>MIN</span></div>
+        <div><strong>{{ event_ends.sec }}</strong><span>SEC</span></div>
+      </div>
+      <p class="center-text">{{ participants }} participants</p>
+    </div>
+
+    <div class="cards-grid">
+      {% for car in cars %}
+      <article class="motor-card motor-theme-{{ loop.index }}">
+        <div class="motor-head">
+          <div>
+            <div class="motor-badge">{{ car.badge }}</div>
+            <h3>{{ car.name }}</h3>
+            <p>{{ car.type }}</p>
+          </div>
+        </div>
+
+        <div class="motor-image-wrap">
+          <img src="{{ url_for('static', filename=car.image) }}" alt="{{ car.name }}" class="motor-image">
+        </div>
+
+        <div class="motor-features">
+          <div class="feature-item">
+            <span class="feature-label">Power</span>
+            <strong>{{ car.hp }}</strong>
+          </div>
+          <div class="feature-item">
+            <span class="feature-label">Range</span>
+            <strong>{{ car.range }}</strong>
+          </div>
+          <div class="feature-item">
+            <span class="feature-label">Ships To</span>
+            <strong>All Countries</strong>
+          </div>
+          <div class="feature-item">
+            <span class="feature-label">Delivery</span>
+            <strong>{{ car.delivery }}</strong>
+          </div>
+          <div class="feature-item price-item">
+            <span class="feature-label">Price</span>
+            <strong>{{ car.fee }}</strong>
+          </div>
+        </div>
+
+        <a class="btn btn-primary full motor-btn" href="{{ url_for('claim') }}">
+          Claim this Tesla Now
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+
+    <div class="center-note">
+      <h3>⚡ Tesla Electric — Built for the Future</h3>
+      <p>Each participant is eligible for one vehicle only.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

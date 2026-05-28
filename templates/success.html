@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmed{% endblock %}
+{% block content %}
+
+<section class="success-section">
+  <div class="container">
+    <div class="success-card">
+      <div class="success-icon-wrap">
+        <div class="success-icon">✓</div>
+      </div>
+
+      <span class="success-kicker">Payment Submitted</span>
+      <h2>Your Order Has Been Received</h2>
+      <p class="success-message">
+        Thank you for submitting your delivery payment proof. Your order is now under review,
+        and our team will contact you shortly with the next steps.
+      </p>
+
+      <div class="success-summary">
+        <div class="success-summary-item">
+          <span>Customer</span>
+          <strong>{{ data.name if data else 'Customer' }}</strong>
+        </div>
+        <div class="success-summary-item">
+          <span>Car</span>
+          <strong>{{ car.name if car else 'Tesla Model' }}</strong>
+        </div>
+        <div class="success-summary-item">
+          <span>Delivery Status</span>
+          <strong>Under Review</strong>
+        </div>
+      </div>
+
+      <div class="success-notice">
+        <p><strong>Next Step:</strong> Please keep your phone reachable for verification and confirmation.</p>
+      </div>
+
+      <div class="success-actions">
+        <a href="{{ url_for('giveaway') }}" class="success-btn primary">Back to Home</a>
+        <a href="{{ url_for('transactions') }}" class="success-btn secondary">View Live Deliveries</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

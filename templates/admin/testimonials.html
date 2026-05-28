@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Testimonials{% endblock %}
+{% block content %}
+<section class="admin-shell">
+  <div class="container admin-layout">
+    <aside class="sidebar admin-card">
+      <h3>Admin Panel</h3>
+      <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('admin_settings') }}">Settings</a>
+      <a class="active" href="{{ url_for('admin_testimonials') }}">Testimonials</a>
+      <a href="{{ url_for('admin_payments') }}">Payments</a>
+      <a href="{{ url_for('admin_tutorials') }}">Tutorials</a>
+      <a href="{{ url_for('admin_logout') }}">Logout</a>
+    </aside>
+
+    <div class="admin-main">
+      <form class="admin-card claim-form" method="post">
+        <h2>Add Testimonial</h2>
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="text" name="country" placeholder="Country" required>
+        <input type="text" name="time_text" placeholder="Time text (e.g. 2 hours ago)" required>
+        <textarea name="comment" rows="4" placeholder="Comment" required></textarea>
+        <button class="btn btn-primary full" type="submit">Add Testimonial</button>
+      </form>
+
+      <div class="admin-card">
+        <h2>Existing Testimonials</h2>
+        <table class="table">
+          <thead>
+            <tr><th>Name</th><th>Country</th><th>Time</th><th>Comment</th></tr>
+          </thead>
+          <tbody>
+            {% for t in testimonials %}
+            <tr>
+              <td>{{ t.name }}</td>
+              <td>{{ t.country }}</td>
+              <td>{{ t.time_text }}</td>
+              <td>{{ t.comment }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Instruction{% endblock %}
+{% block content %}
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <span class="badge live"><span class="dot"></span> Simple process</span>
+      <h1 class="page-title">How to Claim Your Tesla Car</h1>
+      <p>Follow these simple steps to receive your brand new Tesla electric car giveaway.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-md-6 col-lg-3">
+        <article class="step-card h-100">
+          <span class="step-index">01</span>
+          <h3>Register Your Details</h3>
+          <p>Enter your name, delivery address, and contact information so Tesla can ship your car directly to you.</p>
+        </article>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <article class="step-card h-100">
+          <span class="step-index">02</span>
+          <h3>Choose Your Tesla Car</h3>
+          <p>Select your preferred Tesla model: Model 3, Model Y, Model S, or Model X — all brand new.</p>
+        </article>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <article class="step-card h-100">
+          <span class="step-index">03</span>
+          <h3>Pay Delivery Fee</h3>
+          <p>Pay the small one-time delivery fee to cover shipping and logistics. This is the only fee required.</p>
+        </article>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <article class="step-card h-100">
+          <span class="step-index">04</span>
+          <h3>Receive Your Tesla Car</h3>
+          <p>Your brand new Tesla electric car will be delivered to your door within 7–14 business days. Enjoy.</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="center-btn">
+      <a class="btn btn-primary" href="{{ url_for('claim') }}">🚗 Start Claiming Your Tesla Now →</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

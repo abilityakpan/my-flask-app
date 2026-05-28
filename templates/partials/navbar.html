@@ -1,0 +1,38 @@
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a class="brand brand-link" href="{{ url_for('giveaway') }}">
+      <img
+        src="{{ url_for('static', filename='images/Tesla.jpg') }}"
+        alt="logo"
+        class="site-logo"
+      >
+      <span class="brand-text">
+        <span class="brand-red">{{ site_name.split(' ')[0] }}</span> Motors
+      </span>
+    </a>
+
+    <div class="nav-links">
+      <!-- Navbar -->
+      <a href="{{ url_for('giveaway') }}">Giveaway</a>
+     <a href="{{ url_for('giveaway') }}#info">Info</a>
+      <a href="{{ url_for('giveaway') }}#instruction">Instruction</a>
+      <a href="{{ url_for('giveaway') }}#participate">Participate</a
+      <a href="{{ url_for('giveaway') }}#transactions">Transactions</a>
+      <!-- <a href="{{ url_for('giveaway') }}#transactions">Transactions</a> -->
+      <a class="btn btn-primary" href="{{ url_for('claim') }}">Claim Now</a>
+  
+    
+    </div>
+     
+
+      <!-- <a href="{{ url_for('giveaway') }}#info">Info</a>
+       -->
+      
+      <!-- Updated link to anchor to the transaction section -->
+      
+    <!-- </div> -->
+ <!-- <a href="{{ url_for('giveaway') }}#participate">Participate</a>
+    </div> -->
+
+    
+</nav>

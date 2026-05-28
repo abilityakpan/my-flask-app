@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Payments{% endblock %}
+{% block content %}
+<section class="admin-shell">
+  <div class="container admin-layout">
+    <aside class="sidebar admin-card">
+      <h3>Admin Panel</h3>
+      <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('admin_settings') }}">Settings</a>
+      <a href="{{ url_for('admin_testimonials') }}">Testimonials</a>
+      <a class="active" href="{{ url_for('admin_payments') }}">Payments</a>
+      <a href="{{ url_for('admin_tutorials') }}">Tutorials</a>
+      <a href="{{ url_for('admin_logout') }}">Logout</a>
+    </aside>
+
+    <div class="admin-main">
+      <div class="admin-card">
+        <h2>Payment Controls</h2>
+        <p class="muted">Configure WhatsApp redirection, fees, and instructions for participants.</p>
+        <table class="table">
+          <thead>
+            <tr><th>Claim</th><th>Amount</th><th>Method</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            {% for p in payments %}
+            <tr>
+              <td>{{ p.full_name or "—" }} / {{ p.model_name or "—" }}</td>
+              <td>{{ p.amount }}</td>
+              <td>{{ p.method }}</td>
+              <td>{{ p.payment_status }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

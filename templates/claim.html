@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Claim Your Car{% endblock %}
+{% block content %}
+
+<section class="claim-section">
+  <div class="container">
+    <div class="claim-hero">
+      <span class="claim-badge">🎉 You've been selected!</span>
+      <h2>Complete Your Delivery Details</h2>
+      <p>Fill in your information to confirm your Tesla delivery request.</p>
+
+      <div class="claim-progress">
+        <div class="claim-progress-bar"><span></span></div>
+        <div class="claim-progress-text">Step 1 of 3 · Delivery details</div>
+      </div>
+    </div>
+
+    <div class="claim-layout">
+      <div class="claim-info">
+        <div class="claim-info-card">
+          <h3>Your Tesla Claim</h3>
+          <p>
+            Select your preferred Tesla model, enter your contact information,
+            and provide a delivery address so the vehicle can be prepared for shipment.
+          </p>
+
+          <ul>
+            <li>Fast delivery confirmation.</li>
+            <li>Secure processing.</li>
+            <li>Worldwide delivery support.</li>
+          </ul>
+
+          <div class="model-preview">
+            <div class="model-preview-label">Selected Model</div>
+            <div class="model-preview-box">
+              <h4 id="previewModel">{{ cars[0].name if cars else 'Tesla Model' }}</h4>
+              <p id="previewType">{{ cars[0].type if cars else 'Electric Vehicle' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="claim-form-wrap">
+        <form class="claim-form" method="post">
+          <div class="form-group">
+            <label for="model">Choose Your Tesla Car Model</label>
+            <div class="input-icon select-wrapper">
+              <span>🚗</span>
+              <select id="model" name="model" required onchange="updatePreview(this)">
+                <option value="" disabled selected>Select a Tesla model</option>
+                {% for car in cars %}
+                <option value="{{ car.name }}" data-type="{{ car.type }}">{{ car.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Personal Information</label>
+            <div class="input-icon">
+              <span>👤</span>
+              <input id="name" type="text" name="name" placeholder="Full name" required autocomplete="name">
+            </div>
+            <div class="input-icon">
+              <span>✉️</span>
+              <input type="email" name="email" placeholder="Email address" required autocomplete="email">
+            </div>
+            <div class="input-icon">
+              <span>📞</span>
+              <input type="tel" name="phone" placeholder="WhatsApp number" required autocomplete="tel">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Location Details</label>
+            <div class="input-icon">
+              <span>🏳️</span>
+              <input type="text" name="country" placeholder="Country" required autocomplete="country-name">
+            </div>
+            <div class="input-icon">
+              <span>🏙️</span>
+              <input type="text" name="city" placeholder="City" required autocomplete="address-level2">
+            </div>
+            <div class="input-icon">
+              <span>🏷️</span>
+              <input type="text" name="zip_postal" placeholder="Zip / Postal Code" required autocomplete="postal-code">
+            </div>
+            <div class="input-icon">
+              <span>🎟️</span>
+              <input type="text" name="promo_code" placeholder="Promo code" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="address">Delivery Address</label>
+            <div class="input-icon textarea-icon">
+              <span>📍</span>
+              <textarea id="address" name="address" rows="4" placeholder="Delivery address" required autocomplete="street-address"></textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary full claim-btn" type="submit">Order Now →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function updatePreview(select) {
+  const opt = select.options[select.selectedIndex];
+  if (!opt) return;
+  document.getElementById('previewModel').textContent = opt.value || 'Tesla Model';
+  document.getElementById('previewType').textContent = opt.dataset.type || 'Electric Vehicle';
+}
+document.addEventListener('DOMContentLoaded', function () {
+  const s = document.getElementById('model');
+  if (s) updatePreview(s);
+});
+</script>
+
+{% endblock %}

