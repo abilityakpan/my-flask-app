@@ -1,24 +1,11 @@
-try:
-    import mysql.connector
-except ImportError as exc:
-    raise RuntimeError(
-        "Missing required dependency 'mysql-connector-python'. "
-        "Install it with `pip install mysql-connector-python`."
-    ) from exc
-
-from flask import g, current_app
+import os
+import sqlite3
+from flask import g
 
 def get_db():
-    if "db" not in g or not g.db.is_connected():
-        g.db = mysql.connector.connect(
-            host=current_app.config["MYSQL_HOST"],
-            user=current_app.config["MYSQL_USER"],
-            password=current_app.config["MYSQL_PASSWORD"],
-            database=current_app.config["MYSQL_DATABASE"],
-        )
+    if 'db' not in g:
+        # This looks for a local database file named 'database.db'
+        g.db = sqlite3.connect('database.db')
+        # This tells SQLite to return rows as dictionaries (so you can access them like row['email'])
+        g.db.row_factory = sqlite3.Row
     return g.db
-
-def close_db(e=None):
-    db = g.pop("db", None)
-    if db is not None:
-        db.close()
