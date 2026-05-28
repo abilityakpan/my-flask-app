@@ -1,6 +1,6 @@
 """
 SQLite Database Module - Render Optimized
-Fixed version using dict syntax for current_app.g
+
 """
 
 import os
@@ -16,7 +16,11 @@ else:
 
 def get_db():
     """Get database connection with SQLite Row factory."""
-    # current_app.g is a dict, use dict syntax
+    # Initialize g if it doesn't exist
+    if not hasattr(current_app, 'g'):
+        current_app.g = {}
+    
+    # Create db if it doesn't exist in g
     if 'db' not in current_app.g:
         # Ensure directory exists
         db_dir = os.path.dirname(DATABASE)
@@ -28,9 +32,9 @@ def get_db():
 
 
 def close_db(e=None):
-    """Close database connection - safely handle missing 'db' in g."""
-    # Safely check if 'db' exists in g dict before trying to close
-    if 'db' in current_app.g:
+    """Close database connection - safely handle missing 'g' attribute."""
+    # Check if 'g' exists AND has 'db' key
+    if hasattr(current_app, 'g') and 'db' in current_app.g:
         db = current_app.g.pop('db', None)
         if db is not None:
             db.close()
