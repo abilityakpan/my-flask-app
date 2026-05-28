@@ -15,6 +15,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "change-this-secret")
 
+# MySQL config kept for compatibility (not used with SQLite)
 app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "")
@@ -142,7 +143,7 @@ TESTIMONIES = [
 def get_setting(key, default=""):
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT setting_value FROM site_settings WHERE setting_key=%s", (key,))
+    cur.execute("SELECT setting_value FROM site_settings WHERE setting_key=?", (key,))  # ? instead of %s
     row = cur.fetchone()
     cur.close()
     return row["setting_value"] if row else default
@@ -233,7 +234,6 @@ def pay(plan):
 @app.route("/claim", methods=["GET", "POST"])
 def claim():
     if request.method == "POST":
-        # 1. Capture data from form
         model = request.form.get("model")
         name = request.form.get("name")
         email = request.form.get("email")
@@ -248,17 +248,16 @@ def claim():
             flash("Promo code is required.", "error")
             return render_template("claim.html", cars=CAR_MODELS)
 
-        # 2. Save to MySQL database
+        # Save to SQLite database (using ? instead of %s)
         db = get_db()
         cur = db.cursor()
         cur.execute("""
             INSERT INTO claims (model_name, full_name, email, phone, country, city, zip_postal, promo_code, address)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (model, name, email, phone, country, city, zip_postal, promo_code, address))
         db.commit()
         cur.close()
 
-        # 3. Store in session for the order summary page
         session["claim_data"] = {
             "model": model,
             "name": name,
@@ -294,36 +293,6 @@ def order_summary():
 
     return render_template("order_summary.html", data=data, car=selected_model)
 
-# @app.route("/pay-delivery", methods=["GET", "POST"])
-# def pay_delivery():
-#     data = session.get("claim_data")
-#     if not data:
-#         return redirect(url_for("claim"))
-
-#     delivery = session.get("delivery_option", "standard")
-#     delivery_map = {
-#         "standard": {"fee": 299, "eta": "10–14 business days"},
-#         "express": {"fee": 349, "eta": "5–7 business days"},
-#         "premium": {"fee": 399, "eta": "3–5 business days"},
-#     }
-
-#     selected_model = next(
-#         (car for car in CAR_MODELS if car["name"] == data["model"]),
-#         CAR_MODELS[0]
-#     )
-
-#     if request.method == "POST":
-#         payment_method = request.form.get("payment_method")
-#         session["payment_method"] = payment_method
-#         return redirect(url_for("success_page"))
-
-#     return render_template(
-#         "pay_delivery.html",
-#         data=data,
-#         car=selected_model,
-#         delivery=delivery_map.get(delivery, delivery_map["standard"])
-#     )
-
 @app.route("/pay-delivery")
 def pay_delivery():
     data = session.get("claim_data")
@@ -344,13 +313,13 @@ def pay_delivery():
     delivery_info = delivery_map.get(delivery, delivery_map["standard"])
 
     message = (
-        f"Hello Admin, I want to pay for delivery.\n"
-        f"Name: {data['name']}\n"
-        f"Email: {data['email']}\n"
-        f"Phone: {data['phone']}\n"
-        f"Address: {data['address']}\n"
-        f"Car: {selected_model['name']} 2025\n"
-        f"Delivery Fee: ${delivery_info['fee']}\n"
+        f"Hello Admin, I want to pay for delivery.\\n"
+        f"Name: {data['name']}\\n"
+        f"Email: {data['email']}\\n"
+        f"Phone: {data['phone']}\\n"
+        f"Address: {data['address']}\\n"
+        f"Car: {selected_model['name']} 2025\\n"
+        f"Delivery Fee: ${delivery_info['fee']}\\n"
         f"ETA: {delivery_info['eta']}"
     )
 
@@ -367,26 +336,12 @@ def whatsapp_link(message):
     number = get_setting("whatsapp_number", current_app.config["ADMIN_WHATSAPP"])
     return f"https://wa.me/{number}?text={quote(message)}"
 
-# @app.route("/success")
-# def success_page():
-#     return render_template("success.html")
-
-
-# @app.route("/success")
-# def success_page():
-#     data = session.get("claim_data")
-#     delivery = session.get("delivery_option", "standard")
-#     selected_model = next((car for car in CAR_MODELS if car["name"] == data["model"]), CAR_MODELS[0]) if data else None
-#     return render_template("success.html", data=data, car=selected_model, delivery=delivery)
-
 @app.route("/success")
 def success_page():
     data = session.get("claim_data")
     delivery = session.get("delivery_option", "standard")
     selected_model = next((car for car in CAR_MODELS if car["name"] == data["model"]), CAR_MODELS[0]) if data else None
     return render_template("success.html", data=data, car=selected_model, delivery=delivery)
-
-
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
@@ -395,7 +350,7 @@ def admin_login():
         password = request.form.get("password")
         db = get_db()
         cur = db.cursor()
-        cur.execute("SELECT * FROM admins WHERE email=%s", (email,))
+        cur.execute("SELECT * FROM admins WHERE email=?", (email,))  # ? instead of %s
         admin = cur.fetchone()
         cur.close()
         if admin and check_password_hash(admin["password_hash"], password):
@@ -404,47 +359,10 @@ def admin_login():
         flash("Invalid credentials.", "error")
     return render_template("admin/login.html")
 
-# @app.route("/admin")
-# @login_required
-# def admin_dashboard():
-#     db = get_db()
-#     cur = db.cursor(dictionary=True)
-    
-#     # 1. Get stats
-#     cur.execute("SELECT COUNT(*) AS total FROM claims")
-#     claims_count = cur.fetchone()["total"]
-    
-#     cur.execute("SELECT COUNT(*) AS total FROM testimonials")
-#     testimonials_count = cur.fetchone()["total"]
-    
-#     cur.execute("SELECT COUNT(*) AS total FROM payments")
-#     payments_count = cur.fetchone()["total"]
-    
-#     # 2. Get recent claims including phone and promo_code
-#     # Ensure these column names (phone, promo_code, model_name) 
-#     # match the names exactly as they are in your database
-#     cur.execute("""
-#         SELECT full_name, phone, promo_code, model_name, created_at 
-#         FROM claims 
-#         ORDER BY id DESC LIMIT 10
-#     """)
-#     recent_claims = cur.fetchall()
-    
-#     cur.close()
-    
-#     return render_template(
-#         "admin/dashboard.html", 
-#         claims=claims_count, 
-#         testimonials=testimonials_count, 
-#         payments=payments_count,
-#         recent_claims=recent_claims
-#     )
-
 @app.route("/admin/settings", methods=["GET", "POST"])
 @login_required
 def admin_settings():
     if request.method == "POST":
-        # Add your settings update logic here
         flash("Settings updated.", "success")
         return redirect(url_for("admin_settings"))
     return render_template("admin/settings.html")
@@ -453,27 +371,6 @@ def admin_settings():
 def admin_logout():
     session.clear()
     return redirect(url_for("admin_login"))
-
-
-
-# @app.route("/admin/payments")
-# @login_required
-# def admin_payments():
-#     db = get_db()
-#     cur = db.cursor(dictionary=True)
-#     # Ensure this query matches your database table structure
-#     cur.execute("""
-#         SELECT p.id, p.amount, p.method, p.payment_status, p.created_at, c.name, c.model 
-#         FROM payments p
-#         LEFT JOIN claims c ON c.id = p.claim_id
-#         ORDER BY p.id DESC
-#     """)
-#     payments = cur.fetchall()
-#     cur.close()
-#     return render_template("admin/payments.html", payments=payments)
-
-
-
 
 @app.route("/admin/testimonials", methods=["GET", "POST"])
 @login_required
@@ -500,194 +397,6 @@ def admin_payments():
 def admin_tutorials():
     return render_template("admin/tutorials.html")
 
-
-# @app.route("/admin/dashboard")
-# @login_required
-# def admin_dashboard():
-#     db = get_db()
-#     cur = db.cursor(dictionary=True)
-    
-#     # Query to fetch the recent claims, including the model_name
-#     cur.execute("SELECT id, full_name, model_name, created_at FROM claims ORDER BY id DESC LIMIT 10")
-#     recent_claims = cur.fetchall()
-    
-#     cur.close()
-    
-#     # Pass 'recent_claims' to your dashboard template
-#     return render_template("admin/dashboard.html", recent_claims=recent_claims)
-
-# @app.route("/admin/login", methods=["GET", "POST"])
-# def admin_login():
-#     if request.method == "POST":
-#         email = request.form.get("email")
-#         password = request.form.get("password")
-#         db = get_db()
-#         cur = db.cursor(dictionary=True)
-#         cur.execute("SELECT * FROM admins WHERE email=%s", (email,))
-#         admin = cur.fetchone()
-#         cur.close()
-
-#         if admin and check_password_hash(admin["password_hash"], password):
-#             session["admin_id"] = admin["id"]
-#             session["admin_name"] = admin["full_name"]
-#             return redirect(url_for("admin_dashboard"))
-
-#         flash("Invalid admin credentials.", "error")
-
-#     return render_template("admin/login.html")
-
-# @app.route("/admin/logout")
-# def admin_logout():
-#     session.clear()
-#     return redirect(url_for("admin_login"))
-
-# @app.route("/admin")
-# @login_required
-# def admin_dashboard():
-#     db = get_db()
-#     cur = db.cursor(dictionary=True)
-    
-#     # Get stats
-#     cur.execute("SELECT COUNT(*) AS total FROM claims")
-#     claims_count = cur.fetchone()["total"]
-    
-#     cur.execute("SELECT COUNT(*) AS total FROM testimonials")
-#     testimonials_count = cur.fetchone()["total"]
-    
-#     cur.execute("SELECT COUNT(*) AS total FROM payments")
-#     payments_count = cur.fetchone()["total"]
-    
-#     # Get recent claims (to show promo codes and user info)
-#     cur.execute("SELECT * FROM claims ORDER BY id DESC LIMIT 10")
-#     recent_claims = cur.fetchall()
-    
-#     cur.close()
-#     return render_template(
-#         "admin/dashboard.html", 
-#         claims=claims_count, 
-#         testimonials=testimonials_count, 
-#         payments=payments_count,
-#         recent_claims=recent_claims
-#     )@app.route("/admin")
-
-
-# @login_required
-# def admin_dashboard():
-#     db = get_db()
-#     cur = db.cursor(dictionary=True)
-    
-#     # Get stats
-#     cur.execute("SELECT COUNT(*) AS total FROM claims")
-#     claims_count = cur.fetchone()["total"]
-    
-#     cur.execute("SELECT COUNT(*) AS total FROM testimonials")
-#     testimonials_count = cur.fetchone()["total"]
-    
-#     cur.execute("SELECT COUNT(*) AS total FROM payments")
-#     payments_count = cur.fetchone()["total"]
-    
-#     # Get recent claims (to show promo codes and user info)
-#     cur.execute("SELECT * FROM claims ORDER BY id DESC LIMIT 10")
-#     recent_claims = cur.fetchall()
-    
-#     cur.close()
-#     return render_template(
-#         "admin/dashboard.html", 
-#         claims=claims_count, 
-#         testimonials=testimonials_count, 
-#         payments=payments_count,
-#         recent_claims=recent_claims
-#     )
-
-# @app.route("/admin/settings", methods=["GET", "POST"])
-# @login_required
-# def admin_settings():
-#     if request.method == "POST":
-#         items = {
-#             "site_name": request.form.get("site_name", "Tesla Motors"),
-#             "whatsapp_number": request.form.get("whatsapp_number", "2348012345678"),
-#             "hero_joined_count": request.form.get("hero_joined_count", "12,907"),
-#             "event_live_count": request.form.get("event_live_count", "12,919"),
-#             "delivery_fee_note": request.form.get("delivery_fee_note", "Covers shipping, customs & logistics"),
-#         }
-#         db = get_db()
-#         cur = db.cursor()
-#         for k, v in items.items():
-#             cur.execute("""
-#                 INSERT INTO site_settings (setting_key, setting_value)
-#                 VALUES (%s, %s)
-#                 ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)
-#             """, (k, v))
-#         db.commit()
-#         cur.close()
-#         flash("Settings updated successfully.", "success")
-#         return redirect(url_for("admin_settings"))
-
-#     return render_template("admin/settings.html")
-
-# @app.route("/admin/testimonials", methods=["GET", "POST"])
-# @login_required
-# def admin_testimonials():
-#     db = get_db()
-#     if request.method == "POST":
-#         name = request.form.get("name")
-#         country = request.form.get("country")
-#         time_text = request.form.get("time_text")
-#         comment = request.form.get("comment")
-#         cur = db.cursor()
-#         cur.execute(
-#             "INSERT INTO testimonials (name, country, time_text, comment) VALUES (%s, %s, %s, %s)",
-#             (name, country, time_text, comment),
-#         )
-#         db.commit()
-#         cur.close()
-#         flash("Testimonial added.", "success")
-#         return redirect(url_for("admin_testimonials"))
-
-#     cur = db.cursor(dictionary=True)
-#     cur.execute("SELECT * FROM testimonials ORDER BY id DESC")
-#     testimonials = cur.fetchall()
-#     cur.close()
-#     return render_template("admin/testimonials.html", testimonials=testimonials)
-
-# @app.route("/admin/payments")
-# @login_required
-# def admin_payments():
-#     db = get_db()
-#     cur = db.cursor(dictionary=True)
-#     cur.execute("""
-#         SELECT p.id, p.amount, p.method, p.payment_status, p.created_at, c.full_name, c.model_name
-#         FROM payments p
-#         LEFT JOIN claims c ON c.id = p.claim_id
-#         ORDER BY p.id DESC
-#     """)
-#     payments = cur.fetchall()
-#     cur.close()
-#     return render_template("admin/payments.html", payments=payments)
-
-# @app.route("/admin/tutorials")
-# @login_required
-# def admin_tutorials():
-#     return render_template("admin/tutorials.html")
-
-# @app.route("/admin/add-admin", methods=["POST"])
-# @login_required
-# def add_admin():
-#     full_name = request.form.get("full_name")
-#     email = request.form.get("email")
-#     password = request.form.get("password")
-#     db = get_db()
-#     cur = db.cursor()
-#     cur.execute(
-#         "INSERT INTO admins (email, password_hash, full_name) VALUES (%s, %s, %s)",
-#         (email, generate_password_hash(password), full_name),
-#     )
-#     db.commit()
-#     cur.close()
-#     flash("Admin added successfully.", "success")
-#     return redirect(url_for("admin_dashboard"))
-
-
 @app.route("/admin")
 @login_required
 def admin_dashboard():
@@ -705,7 +414,6 @@ def admin_dashboard():
     payments_count = cur.fetchone()["total"]
     
     # 2. Fetch the 10 most recent claims
-    # Ensure these column names match your MySQL table schema exactly
     cur.execute("""
         SELECT full_name, email, model_name, phone, country, promo_code, created_at 
         FROM claims 
@@ -723,17 +431,14 @@ def admin_dashboard():
         recent_claims=recent_claims
     )
 
-
-
-
-
 def init_db():
     with sqlite3.connect('database.db') as conn:
+        conn.row_factory = sqlite3.Row  # Enable dict-like access to rows
         cursor = conn.cursor()
         
-        # 1. Create the claim table (Notice AUTOINCREMENT without the underscore)
+        # Create claims table
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS claim (
+            CREATE TABLE IF NOT EXISTS claims (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 model_name TEXT NOT NULL,
                 full_name TEXT NOT NULL,
@@ -748,9 +453,9 @@ def init_db():
             )
         ''')
         
-        # 2. Create the admin table (Notice AUTOINCREMENT here too)
+        # Create admins table
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS admin (
+            CREATE TABLE IF NOT EXISTS admins (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT NOT NULL UNIQUE,
                 password_hash TEXT NOT NULL,
@@ -759,18 +464,62 @@ def init_db():
             )
         ''')
         
-        # 3. Insert your default admin user safely if they don't exist yet
+        # Create testimonials table
         cursor.execute('''
-            INSERT OR IGNORE INTO admin (id, email, password_hash, full_name, created_at)
+            CREATE TABLE IF NOT EXISTS testimonials (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                country TEXT NOT NULL,
+                time_text TEXT NOT NULL,
+                comment TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Create payments table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS payments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                claim_id INTEGER,
+                amount TEXT NOT NULL,
+                method TEXT NOT NULL,
+                payment_status TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (claim_id) REFERENCES claims(id)
+            )
+        ''')
+        
+        # Create site_settings table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS site_settings (
+                setting_key TEXT PRIMARY KEY,
+                setting_value TEXT NOT NULL
+            )
+        ''')
+        
+        # Insert default admin if not exists
+        cursor.execute('''
+            INSERT OR IGNORE INTO admins (id, email, password_hash, full_name, created_at)
             VALUES (1, 'admin@tesla.com', 'scrypt:32768:8:1$qJFadhyH8KgMajwt$05e24e36e6b70f9958156193796da034639b56fceb5c472cbf0823351996f0ab5a38ecbe6e8973db129e0004ccb708608e6be018788c03e54b68ff52843b0923', 'Tesla Admin', '2026-05-21 17:58:30')
         ''')
+        
+        # Insert default settings
+        default_settings = [
+            ('site_name', 'Tesla Motors'),
+            ('whatsapp_number', '2348012345678'),
+            ('hero_joined_count', '12,907'),
+            ('event_live_count', '12,919'),
+            ('delivery_fee_note', 'Covers shipping, customs & logistics'),
+        ]
+        cursor.executemany('''
+            INSERT OR IGNORE INTO site_settings (setting_key, setting_value)
+            VALUES (?, ?)
+        ''', default_settings)
+        
         conn.commit()
-
-
 
 @app.route("/api/comments")
 def get_comments():
-    # Generate 50 comments on the fly
     all_comments = []
     for i in range(1, 51):
         all_comments.append({
@@ -789,17 +538,17 @@ def get_comments():
     
     return jsonify(all_comments[start : start + per_page])
 
-    # def ensure_comments_exist():
-    #     path = "static/data/comments.json"
-    # if not os.path.exists(path) or os.path.getsize(path) == 0:
-    #     os.makedirs("static/data", exist_ok=True)
-    #     # This is a sample list to ensure the file is NOT empty
-    #     sample_comments = [{"id": 1, "initials": "JD", "name": "John Doe", "time": "1 min ago", "text": "This is a test comment!", "likes": "10", "pinned": True}]
-    #     with open(path, "w", encoding="utf-8") as f:
-    #         json.dump(sample_comments, f)
-    #     print("Created comments file automatically.")
+def ensure_comments_exist():
+    path = "static/data/comments.json"
+    if not os.path.exists(path) or os.path.getsize(path) == 0:
+        os.makedirs("static/data", exist_ok=True)
+        sample_comments = [{"id": 1, "initials": "JD", "name": "John Doe", "time": "1 min ago", "text": "This is a test comment!", "likes": "10", "pinned": True}]
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(sample_comments, f)
+        print("Created comments file automatically.")
 
-# Call this once when the app starts
-    ensure_comments_exist()
+ensure_comments_exist()
+
 if __name__ == "__main__":
+    init_db()  # Initialize database on startup
     app.run(debug=True)
