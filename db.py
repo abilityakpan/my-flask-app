@@ -1,5 +1,6 @@
 """
 SQLite Database Module - Render Optimized
+Fixed version that handles missing 'g' attribute
 """
 
 import os
@@ -15,18 +16,27 @@ else:
 
 def get_db():
     """Get database connection with SQLite Row factory."""
+    # Initialize 'g' if it doesn't exist
+    if not hasattr(current_app, 'g'):
+        current_app.g = {}
+    
     if 'db' not in current_app.g:
-        os.makedirs(os.path.dirname(DATABASE) if os.path.dirname(DATABASE) else '.', exist_ok=True)
+        # Ensure directory exists
+        db_dir = os.path.dirname(DATABASE)
+        if db_dir:
+            os.makedirs(db_dir, exist_ok=True)
         current_app.g.db = sqlite3.connect(DATABASE)
         current_app.g.db.row_factory = sqlite3.Row
     return current_app.g.db
 
 
 def close_db(e=None):
-    """Close database connection."""
-    db = current_app.g.pop('db', None)
-    if db is not None:
-        db.close()
+    """Close database connection - safely handle missing 'g'."""
+    # Safely check if 'g' exists before trying to pop
+    if hasattr(current_app, 'g') and 'db' in current_app.g:
+        db = current_app.g.pop('db', None)
+        if db is not None:
+            db.close()
 
 
 def init_db():
