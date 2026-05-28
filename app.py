@@ -724,6 +724,53 @@ def admin_dashboard():
 
 
 
+
+
+def init_db():
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        
+        # 1. Create the claim table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS claim (
+                id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                model_name TEXT NOT NULL,
+                full_name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                phone TEXT NOT NULL,
+                country TEXT NOT NULL,
+                city TEXT NOT NULL,
+                zip_postal TEXT NOT NULL,
+                promo_code TEXT,
+                address TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # 2. Create the admin table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS admin (
+                id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                email TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                full_name TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # 3. Insert your hashed admin user safely if they don't exist
+        cursor.execute('''
+            INSERT OR IGNORE INTO admin (id, email, password_hash, full_name, created_at)
+            VALUES (1, 'admin@tesla.com', 'scrypt:32768:8:1$qJFadhyH8KgMajwt$05e24e36e6b70f9958156193796da034639b56fceb5c472cbf0823351996f0ab5a38ecbe6e8973db129e0004ccb708608e6be018788c03e54b68ff52843b0923', 'Tesla Admin', '2026-05-21 17:58:30')
+        ''')
+        conn.commit()
+
+# Call the function to build everything automatically on boot
+init_db()
+
+
+
+
 @app.route("/api/comments")
 def get_comments():
     # Generate 50 comments on the fly
