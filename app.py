@@ -731,10 +731,10 @@ def init_db():
     with sqlite3.connect('database.db') as conn:
         cursor = conn.cursor()
         
-        # 1. Create the claim table
+        # 1. Create the claim table (Notice AUTOINCREMENT without the underscore)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS claim (
-                id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 model_name TEXT NOT NULL,
                 full_name TEXT NOT NULL,
                 email TEXT NOT NULL,
@@ -748,10 +748,10 @@ def init_db():
             )
         ''')
         
-        # 2. Create the admin table
+        # 2. Create the admin table (Notice AUTOINCREMENT here too)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS admin (
-                id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT NOT NULL UNIQUE,
                 password_hash TEXT NOT NULL,
                 full_name TEXT NOT NULL,
@@ -759,16 +759,12 @@ def init_db():
             )
         ''')
         
-        # 3. Insert your hashed admin user safely if they don't exist
+        # 3. Insert your default admin user safely if they don't exist yet
         cursor.execute('''
             INSERT OR IGNORE INTO admin (id, email, password_hash, full_name, created_at)
             VALUES (1, 'admin@tesla.com', 'scrypt:32768:8:1$qJFadhyH8KgMajwt$05e24e36e6b70f9958156193796da034639b56fceb5c472cbf0823351996f0ab5a38ecbe6e8973db129e0004ccb708608e6be018788c03e54b68ff52843b0923', 'Tesla Admin', '2026-05-21 17:58:30')
         ''')
         conn.commit()
-
-# Call the function to build everything automatically on boot
-init_db()
-
 
 
 
