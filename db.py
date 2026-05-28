@@ -1,6 +1,6 @@
 """
 SQLite Database Module - Render Optimized
-
+Final version with automatic initialization
 """
 
 import os
@@ -41,15 +41,18 @@ def close_db(e=None):
 
 
 def init_db():
-    """Initialize database with all tables."""
+    """Initialize database with all tables. Call this on app startup."""
     db_dir = os.path.dirname(DATABASE)
     if db_dir:
         os.makedirs(db_dir, exist_ok=True)
+    
+    print(f"Initializing database at: {DATABASE}")
     
     with sqlite3.connect(DATABASE) as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
+        # Create claims table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS claims (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,6 +69,7 @@ def init_db():
             )
         """)
         
+        # Create admins table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS admins (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,6 +80,7 @@ def init_db():
             )
         """)
         
+        # Create testimonials table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS testimonials (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,6 +92,7 @@ def init_db():
             )
         """)
         
+        # Create payments table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS payments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -99,6 +105,7 @@ def init_db():
             )
         """)
         
+        # Create site_settings table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS site_settings (
                 setting_key TEXT PRIMARY KEY,
@@ -106,11 +113,13 @@ def init_db():
             )
         """)
         
+        # Insert default admin (email: admin@tesla.com, password: admin)
         cursor.execute("""
             INSERT OR IGNORE INTO admins (id, email, password_hash, full_name, created_at)
             VALUES (1, 'admin@tesla.com', 'scrypt:32768:8:1$qJFadhyH8KgMajwt$05e24e36e6b70f9958156193796da034639b56fceb5c472cbf0823351996f0ab5a38ecbe6e8973db129e0004ccb708608e6be018788c03e54b68ff52843b0923', 'Tesla Admin', '2026-05-21 17:58:30')
         """)
         
+        # Insert default settings
         default_settings = [
             ('site_name', 'Tesla Motors'),
             ('whatsapp_number', '2348012345678'),
@@ -124,4 +133,9 @@ def init_db():
         """, default_settings)
         
         conn.commit()
-        print(f"Database initialized at: {DATABASE}")
+        print("✓ Database tables created successfully!")
+        print(f"  - claims")
+        print(f"  - admins (default: admin@tesla.com / admin)")
+        print(f"  - testimonials")
+        print(f"  - payments")
+        print(f"  - site_settings")
