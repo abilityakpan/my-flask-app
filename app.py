@@ -25,6 +25,7 @@ if os.getenv("RENDER"):
 # Admin config
 app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "+1 (404) 615-0478")
 
+# IMPORTANT: Register teardown handler after app creation
 app.teardown_appcontext(close_db)
 
 CAR_MODELS = [
@@ -460,20 +461,22 @@ def ensure_comments_exist():
             json.dump(sample_comments, f)
         print("Created comments file automatically.")
 
-# Initialize on startup
+# Initialize comments on startup
 ensure_comments_exist()
 
 # Initialize database if it doesn't exist
 if not os.getenv("RENDER"):
-    # Only run init_db() locally, not on Render (Render runs init_db() from db.py)
+    # Local development - check if database exists
     if not os.path.exists('database.db'):
         db_init_db()
+        print("Database initialized for local development!")
 elif os.getenv("RENDER_DISK_MOUNT_POINT"):
     # On Render with persistent disk
     db_path = os.path.join(os.getenv("RENDER_DISK_MOUNT_POINT"), "database.db")
     if not os.path.exists(db_path):
         db_init_db()
+        print("Database initialized on Render!")
 
 if __name__ == "__main__":
-    # Local development
+    # Local development only (Render uses gunicorn)
     app.run(debug=True)
