@@ -141,7 +141,7 @@ TESTIMONIES = [
 
 def get_setting(key, default=""):
     db = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
     cur.execute("SELECT setting_value FROM site_settings WHERE setting_key=%s", (key,))
     row = cur.fetchone()
     cur.close()
@@ -394,7 +394,7 @@ def admin_login():
         email = request.form.get("email")
         password = request.form.get("password")
         db = get_db()
-        cur = db.cursor(dictionary=True)
+        cur = db.cursor()
         cur.execute("SELECT * FROM admins WHERE email=%s", (email,))
         admin = cur.fetchone()
         cur.close()
@@ -479,7 +479,7 @@ def admin_logout():
 @login_required
 def admin_testimonials():
     db = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
     cur.execute("SELECT * FROM testimonials ORDER BY id DESC")
     testimonials = cur.fetchall()
     cur.close()
@@ -489,7 +489,7 @@ def admin_testimonials():
 @login_required
 def admin_payments():
     db = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
     cur.execute("SELECT * FROM payments ORDER BY id DESC")
     payments = cur.fetchall()
     cur.close()
@@ -692,7 +692,7 @@ def admin_tutorials():
 @login_required
 def admin_dashboard():
     db = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
     
     # 1. Fetch statistics
     cur.execute("SELECT COUNT(*) AS total FROM claims")
