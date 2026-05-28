@@ -18,7 +18,7 @@ app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD", "")
 app.config["MYSQL_DATABASE"] = os.getenv("MYSQL_DATABASE", "tesla_giveaway")
-app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "2348012345678")
+app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "+1 (404) 615-0478")
 
 app.teardown_appcontext(close_db)
 
