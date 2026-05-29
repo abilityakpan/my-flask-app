@@ -23,7 +23,7 @@ if os.getenv("RENDER"):
         app.config['SERVER_NAME'] = render_host
 
 # Admin config
-app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "+1 (404) 615-0478")
+app.config["ADMIN_WHATSAPP"] = os.getenv("ADMIN_WHATSAPP", "+14046150478")
 
 # IMPORTANT: Register teardown handler after app creation
 app.teardown_appcontext(close_db)
@@ -163,7 +163,7 @@ def get_setting(key, default=""):
 
 def whatsapp_link(message):
     number = get_setting("whatsapp_number", current_app.config["ADMIN_WHATSAPP"])
-    app.config["ADMIN_WHATSAPP"] = "+1 (404) 615-0478")"
+    app.config["ADMIN_WHATSAPP"] = "+14046150478")"
     return f"https://wa.me/{number}?text={quote(message)}"
 
 def login_required(view):
